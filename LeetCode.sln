@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E7DB2505-B343-4836-ADE2-4111073D79BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetCode.Api", "src\LeetCode.Api\LeetCode.Api.csproj", "{B278D78F-062C-4F89-8709-627F60560DF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetCode.Application", "src\LeetCode.Application\LeetCode.Application.csproj", "{4E1C8D31-2063-4C6F-96DA-1578C6A1E514}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetCode.Infrastructure", "src\LeetCode.Infrastructure\LeetCode.Infrastructure.csproj", "{BE3B05B7-3341-4777-BA67-B1336102E07B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeetCode.Domain", "src\LeetCode.Domain\LeetCode.Domain.csproj", "{788E013D-11F5-441E-9FC7-0BA5E76D5C8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B278D78F-062C-4F89-8709-627F60560DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B278D78F-062C-4F89-8709-627F60560DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B278D78F-062C-4F89-8709-627F60560DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B278D78F-062C-4F89-8709-627F60560DF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E1C8D31-2063-4C6F-96DA-1578C6A1E514}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E1C8D31-2063-4C6F-96DA-1578C6A1E514}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E1C8D31-2063-4C6F-96DA-1578C6A1E514}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E1C8D31-2063-4C6F-96DA-1578C6A1E514}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE3B05B7-3341-4777-BA67-B1336102E07B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE3B05B7-3341-4777-BA67-B1336102E07B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE3B05B7-3341-4777-BA67-B1336102E07B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE3B05B7-3341-4777-BA67-B1336102E07B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{788E013D-11F5-441E-9FC7-0BA5E76D5C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{788E013D-11F5-441E-9FC7-0BA5E76D5C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{788E013D-11F5-441E-9FC7-0BA5E76D5C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{788E013D-11F5-441E-9FC7-0BA5E76D5C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B278D78F-062C-4F89-8709-627F60560DF3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{4E1C8D31-2063-4C6F-96DA-1578C6A1E514} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{BE3B05B7-3341-4777-BA67-B1336102E07B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{788E013D-11F5-441E-9FC7-0BA5E76D5C8A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76C52319-0295-4CE1-B8D0-D31B8F4DF95F}
+	EndGlobalSection
+EndGlobal
