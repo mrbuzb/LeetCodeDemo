@@ -7,6 +7,10 @@ public class AppDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<Language> Languages { get; set; }
+    public DbSet<Problem> Problems { get; set; }
+    public DbSet<Submission> Submissions { get; set; }
+    public DbSet<TestCase> TestCases { get; set; }
     public DbSet<UserConfirme> Confirmers { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace LeetCode.Domain.Entities;
 
-namespace LeetCode.Domain.Entities;
-
-public class Leaderboard
+public class UserStats
 {
     public long Id { get; set; }
     public long UserId { get; set; }

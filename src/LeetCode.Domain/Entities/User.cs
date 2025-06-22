@@ -16,6 +16,6 @@ public class User
     public long? ConfirmerId { get; set; }
     public UserConfirme? Confirmer { get; set; }
 
-    
+    public ICollection<Submission> Submissions { get; set; }
     public ICollection<RefreshToken> RefreshTokens { get; set; }
 }

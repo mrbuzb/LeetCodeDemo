@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using System.Security.Claims;
 using FluentEmail.Core;
+using FluentEmail.Smtp;
 using FluentValidation;
 using LeetCode.Application.Dtos;
 using LeetCode.Application.Helpers;

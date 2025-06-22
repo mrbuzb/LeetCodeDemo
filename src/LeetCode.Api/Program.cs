@@ -1,4 +1,9 @@
 
+using EventSystem.Server.Configurations;
+using EventSystem.Server.Endpoints;
+using LeetCode.Api.Configurations;
+using LeetCode.Api.Middlewares;
+
 namespace LeetCode.Api
 {
     public class Program
@@ -14,6 +19,25 @@ namespace LeetCode.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.ConfigureSerilog();
+            builder.ConfigureDataBase();
+            builder.ConfigurationJwtAuth();
+            builder.ConfigureJwtSettings();
+            builder.Services.ConfigureDependecies();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost5173", policy =>
+                {
+                    policy.WithOrigins("http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
+
+
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -24,8 +48,14 @@ namespace LeetCode.Api
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors("AllowLocalhost5173");
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapAdminEndpoints();
+            app.MapAuthEndpoints();
+            app.MapRoleEndpoints();
 
 
             app.MapControllers();
