@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LeetCode.Domain.Entities;
+﻿using LeetCode.Domain.Entities;
 
 namespace LeetCode.Application.Interfaces;
 
@@ -15,5 +10,5 @@ public interface IProblemRepository
     Task<List<Problem>> SearchAsync(string keyword);
     Task<long> AddAsync(Problem problem);
     Task UpdateAsync(Problem problem);
-    Task DeleteAsync(long id);
+    Task DeleteAsync(long problemId, long id);
 }

@@ -14,9 +14,9 @@ public class ProblemService(IProblemRepository _repo) : IProblemService
         return await _repo.AddAsync(problemEntity);
     }
 
-    public async Task DeleteAsync(long id)
+    public async Task DeleteAsync(long problemId,long id)
     {
-        await _repo.DeleteAsync(id);
+        await _repo.DeleteAsync(problemId,id);
     }
 
     public async Task<List<ProblemUpdateDto>> GetAllAsync()

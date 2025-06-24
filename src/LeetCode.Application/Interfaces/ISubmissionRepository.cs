@@ -12,7 +12,7 @@ public interface ISubmissionRepository
     Task<Submission> GetByIdAsync(long id);
     Task<List<Submission>> GetByUserIdAsync(long userId);
     Task<List<Submission>> GetByProblemIdAsync(long problemId);
-    Task AddAsync(Submission submission);
+    Task<long> AddAsync(Submission submission);
     Task UpdateAsync(Submission submission);
     Task DeleteAsync(long id);
 }

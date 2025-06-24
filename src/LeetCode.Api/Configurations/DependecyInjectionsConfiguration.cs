@@ -13,6 +13,15 @@ public static class DependecyInjectionsConfiguration
     public static void ConfigureDependecies(this IServiceCollection services)
     {
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ILanguageService, LanguageService>();
+        services.AddScoped<ITestCaseService, TestCaseService>();
+        services.AddScoped<ISubmissionService, SubmissionService>();
+        services.AddScoped<IProblemService, ProblemService>();
+        services.AddScoped<ILanguageRepository, LanguageRepository>();
+        services.AddScoped<ITestCaseRepository, TestCaseRepository>();
+        services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+        services.AddScoped<IProblemRepository, ProblemRepository>();
+        //services.AddHttpClient<ISubmissionService, SubmissionService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();

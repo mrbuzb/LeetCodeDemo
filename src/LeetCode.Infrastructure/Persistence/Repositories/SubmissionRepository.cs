@@ -7,10 +7,11 @@ namespace LeetCode.Infrastructure.Persistence.Repositories;
 
 public class SubmissionRepository(AppDbContext _context) : ISubmissionRepository
 {
-    public async Task AddAsync(Submission submission)
+    public async Task<long> AddAsync(Submission submission)
     {
         await _context.Submissions.AddAsync(submission);
         await _context.SaveChangesAsync();
+        return submission.Id;
     }
 
     public async Task DeleteAsync(long id)

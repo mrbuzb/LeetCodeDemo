@@ -7,10 +7,11 @@ namespace LeetCode.Infrastructure.Persistence.Repositories;
 
 public class TestCaseRepository(AppDbContext _context) : ITestCaseRepository
 {
-    public async Task AddAsync(TestCase testCase)
+    public async Task<long> AddAsync(TestCase testCase)
     {
         await _context.TestCases.AddAsync(testCase);
         await _context.SaveChangesAsync();
+        return testCase.Id;
     }
 
     public async Task DeleteAsync(long id)

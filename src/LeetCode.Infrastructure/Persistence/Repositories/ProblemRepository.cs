@@ -14,9 +14,13 @@ public class ProblemRepository(AppDbContext _context) : IProblemRepository
         return problem.Id;
     }
 
-    public async Task DeleteAsync(long id)
+    public async Task DeleteAsync(long problemId,long id)
     {
-        var problem = await GetByIdAsync(id);
+        var problem = await GetByIdAsync(problemId);
+        if(problem.CreatorId != id)
+        {
+            throw new NotAllowedException($"This is not your problem");
+        }
         _context.Problems.Remove(problem);
         await _context.SaveChangesAsync();
     }
@@ -33,7 +37,7 @@ public class ProblemRepository(AppDbContext _context) : IProblemRepository
 
     public async Task<Problem> GetByIdAsync(long id)
     {
-        var problem =await _context.Problems.FirstOrDefaultAsync(x=>x.Id == id);
+        var problem =await _context.Problems.Include(x=>x.TestCases).FirstOrDefaultAsync(x=>x.Id == id);
         if(problem == null)
         {
             throw new EntityNotFoundException($"{id}");

@@ -2,6 +2,8 @@
 using EventSystem.Server.Configurations;
 using EventSystem.Server.Endpoints;
 using LeetCode.Api.Configurations;
+using LeetCode.Api.Endpoints;
+using LeetCode.Api.Extensions;
 using LeetCode.Api.Middlewares;
 
 namespace LeetCode.Api
@@ -18,6 +20,7 @@ namespace LeetCode.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            ServiceCollectionExtensions.AddSwaggerWithJwt(builder.Services);
 
             builder.ConfigureSerilog();
             builder.ConfigureDataBase();
@@ -56,6 +59,10 @@ namespace LeetCode.Api
             app.MapAdminEndpoints();
             app.MapAuthEndpoints();
             app.MapRoleEndpoints();
+            app.MapLanguageEndpoints();
+            app.MapProblemEndpoints();
+            app.MapTestCaseEndpoints();
+            app.MapSubmissionEndpoints();
 
 
             app.MapControllers();

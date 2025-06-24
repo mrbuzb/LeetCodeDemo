@@ -11,5 +11,5 @@ public interface IProblemService
     Task<List<ProblemUpdateDto>> SearchAsync(string keyword);
     Task<long> AddAsync(ProblemDto problem,long creatorId);
     Task UpdateAsync(ProblemUpdateDto problem, long creatorId);
-    Task DeleteAsync(long id);
+    Task DeleteAsync(long problemId,long id);
 }
