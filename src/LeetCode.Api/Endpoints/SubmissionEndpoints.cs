@@ -14,7 +14,7 @@ public static class SubmissionEndpoints
         userGroup.MapGet("/get-by-id",
             async (long id, ISubmissionService _service) =>
             {
-                Results.Ok(await _service.GetByIdAsync(id));
+                return Results.Ok(await _service.GetByIdAsync(id));
             })
             .WithName("GetSubmissionById");
 
@@ -26,14 +26,14 @@ public static class SubmissionEndpoints
                 {
                     throw new UnauthorizedAccessException();
                 }
-                Results.Ok(await _service.GetByUserIdAsync(long.Parse(userId)));
+                return Results.Ok(await _service.GetByUserIdAsync(long.Parse(userId)));
             })
             .WithName("GetSubmissionByUserId");
 
         userGroup.MapGet("/get-by-problem-id",
             async (long id,ISubmissionService _service) =>
             {
-                Results.Ok(await _service.GetByProblemIdAsync(id));
+                return Results.Ok(await _service.GetByProblemIdAsync(id));
             })
             .WithName("GetSubmissionByProblemId");
 

@@ -27,7 +27,7 @@ public class ProblemRepository(AppDbContext _context) : IProblemRepository
 
     public async Task<List<Problem>> GetAllAsync()
     {
-        return await _context.Problems.ToListAsync();
+        return await _context.Problems.Include(x=>x.TestCases).ToListAsync();
     }
 
     public async Task<List<Problem>> GetByDifficultyAsync(Difficulty difficulty)

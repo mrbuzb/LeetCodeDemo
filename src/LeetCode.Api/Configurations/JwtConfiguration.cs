@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,8 +21,10 @@ public static class JwtConfiguration
                     ValidAudience = config["Audience"],
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    RoleClaimType = ClaimTypes.Role,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["SecurityKey"]!))
                 };
+
             });
     }
 }

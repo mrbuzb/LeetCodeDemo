@@ -65,6 +65,28 @@ public class ProblemService(IProblemRepository _repo) : IProblemService
             Difficulty = problem.Difficulty,
             Tags = problem.Tags,
             Title = problem.Title,
+            TestCases = problem.TestCases.Select(Converter).ToList()
+        };
+    }
+
+
+    private ProblemTestCaseDto Converter(TestCase testCase)
+    {
+        return new ProblemTestCaseDto
+        {
+            Expected = testCase.Expected,
+            Input = testCase.Input,
+            IsSample = testCase.IsSample
+        };
+    }
+
+    private TestCase Converter(ProblemTestCaseDto testCase)
+    {
+        return new TestCase
+        {
+            Expected = testCase.Expected,
+            Input = testCase.Input,
+            IsSample = testCase.IsSample
         };
     }
 
@@ -76,6 +98,7 @@ public class ProblemService(IProblemRepository _repo) : IProblemService
             Difficulty = problem.Difficulty,
             Tags = problem.Tags,
             Title = problem.Title,
+            TestCases = problem.TestCases.Select(Converter).ToList(),
             Id = problem.Id,
         };
     }

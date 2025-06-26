@@ -17,6 +17,7 @@ public class TestCaseRepository(AppDbContext _context) : ITestCaseRepository
     public async Task DeleteAsync(long id)
     {
         var testCase =await GetByIdAsync(id);
+        _context.TestCases.Remove(testCase);
         await _context.SaveChangesAsync();
     }
 

@@ -16,28 +16,28 @@ public static class ProblemEndoints
         userGroup.MapGet("/get-all",
             async (IProblemService _service) =>
             {
-                Results.Ok(await _service.GetAllAsync());
+                return Results.Ok(await _service.GetAllAsync());
             })
             .WithName("GetAllProblems");
 
         userGroup.MapGet("/get-by-id",
             async (long id,IProblemService _service) =>
             {
-                Results.Ok(await _service.GetByIdAsync(id));
+                return Results.Ok(await _service.GetByIdAsync(id));
             })
             .WithName("GetProblemById");
         
         userGroup.MapGet("/get-by-difficulty",
             async (Difficulty difficulty,IProblemService _service) =>
             {
-                Results.Ok(await _service.GetByDifficultyAsync(difficulty));
+                return Results.Ok(await _service.GetByDifficultyAsync(difficulty));
             })
             .WithName("GetProblemByDifficulty");
         
         userGroup.MapGet("/search-problem",
             async (string keyword,IProblemService _service) =>
             {
-                Results.Ok(await _service.SearchAsync(keyword));
+                return Results.Ok(await _service.SearchAsync(keyword));
             })
             .WithName("SearchProblem");
     }

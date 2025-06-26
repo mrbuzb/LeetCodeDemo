@@ -61,7 +61,7 @@ public static class AdminEndpoints
         userGroup.MapPost("/create-test-case", [Authorize(Roles = "Admin, SuperAdmin")]
         async (TestCaseDto testCase, ITestCaseService _service) =>
         {
-            Results.Ok(await _service.AddAsync(testCase));
+            return Results.Ok(await _service.AddAsync(testCase));
         })
             .WithName("CreateTestCase");
 

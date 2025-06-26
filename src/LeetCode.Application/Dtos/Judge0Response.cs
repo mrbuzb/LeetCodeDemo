@@ -8,9 +8,10 @@ namespace LeetCode.Application.Dtos;
 
 public class Judge0Response
 {
-    public string stdout { get; set; }
-    public string stderr { get; set; }
+    public string? stdout { get; set; }
+    public string? stderr { get; set; }
     public Status status { get; set; }
-    public string time { get; set; }
-    public int memory { get; set; }
+    public string? time { get; set; }
+    public float? memory { get; set; }
+    public string compile_output { get; set; }
 }

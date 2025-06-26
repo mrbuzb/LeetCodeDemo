@@ -1,8 +1,8 @@
-﻿using System.Net.Http.Json;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using LeetCode.Application.Dtos;
 using LeetCode.Application.Interfaces;
+using LeetCode.Core.Errors;
 using LeetCode.Domain.Entities;
 namespace LeetCode.Application.Services;
 
@@ -20,73 +20,154 @@ public class SubmissionService : ISubmissionService
         _problemRepo = problemRepo;
         _languageRepo = languageRepo;
     }
+
+    public static string EscapeDoubleQuotes(string input)
+    {
+        bool insideQuotes = false;
+        var result = new System.Text.StringBuilder();
+
+        foreach (char c in input)
+        {
+            if (c == '"')
+            {
+                // Agar birinchi " bo‘lsa
+                if (!insideQuotes)
+                {
+                    result.Append("\"");
+                    insideQuotes = true;
+                }
+                else
+                {
+                    // Yopuvchi " oldidan / qo‘shamiz
+                    result.Append("\"");
+                    insideQuotes = false;
+                }
+            }
+            else
+            {
+                result.Append(c);
+            }
+        }
+
+        return result.ToString();
+    }
+
+
+    string Normalize(string str)
+    {
+        return string.Join('\n',
+            (str ?? "")
+            .Trim()
+            .Split('\n')
+            .Select(line => line.TrimEnd())
+        );
+    }
+    bool IsEqual(string actual, string expected)
+    {
+        return Normalize(actual) == Normalize(expected);
+    }
+
+
+
     public async Task<SubmissionResultDto> AddAsync(SubmissionDto submission, long userId)
     {
+        submission.Code = EscapeDoubleQuotes(submission.Code);
         var problem = await _problemRepo.GetByIdAsync(submission.ProblemId);
-
         var result = new SubmissionResultDto();
-
-        var testCasesCount = 0;
-        var passedCount = 0;
+        result.IsAccepted = false;
+        int passedCount = 0;
         float totalTime = 0;
         float totalMemory = 0;
-
+        var language = await _languageRepo.GetByIdAsync((int)submission.LanguageId);
         foreach (var testCase in problem.TestCases)
         {
             var request = new
             {
-                language_id = submission.LanguageId,
+                language_id = language.Judge0Id,
                 source_code = submission.Code,
                 stdin = testCase.Input ?? ""
             };
 
             var jsonRequest = JsonSerializer.Serialize(request);
-
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(
                 "http://localhost:2358/submissions?base64_encoded=false&wait=true", content);
 
-            var resContent = await response.Content.ReadAsStringAsync();
-
             if (!response.IsSuccessStatusCode)
             {
-                continue;
+                throw new NotAllowedException();
             }
 
-            var resultOfJudge0 = JsonSerializer.Deserialize<Judge0Response>(resContent);
+            var resContent = await response.Content.ReadAsStringAsync();
+            var judgeResult = JsonSerializer.Deserialize<Judge0Response>(resContent);
 
-            string actual = resultOfJudge0.stdout?.Trim() ?? "";
-            string expected = testCase.Expected.Trim();
+            if (judgeResult is null)
+                continue;
 
-            if (actual == expected)
-                passedCount++;
-
-            totalTime +=float.Parse(resultOfJudge0.time);
-            totalMemory +=resultOfJudge0.memory;
-
-            string statusText = resultOfJudge0.status.description;
-
-            if (statusText != "Accepted" || actual != expected)
+            if (judgeResult.status?.description != "Accepted")
             {
-                result.PassedTestcases = $"{testCasesCount}/{problem.TestCases.Count()}";
-                result.Output = resultOfJudge0.stdout;
-                result.Status = resultOfJudge0.stderr;
-                result.TimeUsed = totalTime;
-                result.MemoryUsed = totalMemory;
+                await _submissionRepo.AddAsync(new Submission
+                {
+                    UserId = userId,
+                    ProblemId = submission.ProblemId,
+                    LanguageId = language.Id,
+                    Code = submission.Code,
+                    Output = result.PassedTestcases,
+                    Status = result.Status,
+                    TimeUsed = result.TimeUsed,
+                    MemoryUsed = result.MemoryUsed,
+                    SubmittedAt = DateTime.Now
+                });
+
+                result.ErrorMessage = judgeResult.stderr??judgeResult.compile_output??"Error";
                 return result;
             }
 
-            testCasesCount++;
+            string actual = judgeResult.stdout?.Trim() ?? "";
+            string expected = testCase.Expected.Trim();
 
-            result.PassedTestcases = $"{testCasesCount}/{problem.TestCases.Count()}";
-            result.Output = resultOfJudge0.stdout;
-            result.Status = resultOfJudge0.stderr;
-            result.TimeUsed = totalTime;
-            result.MemoryUsed = totalMemory;
+            
+
+            if (float.TryParse(judgeResult.time, out float time))
+                totalTime += time;
+
+            totalMemory += judgeResult.memory.GetValueOrDefault(0);
+
+            expected = expected.Replace("\\n","\n");
+            if (IsEqual(actual,expected))
+                passedCount++;
+            if (!IsEqual(actual, expected))
+            {
+                result.PassedTestcases = $"{passedCount}/{problem.TestCases.Count()}";
+                result.Output = actual;
+                result.Status ="WrongAnswer";
+
+                await _submissionRepo.AddAsync(new Submission
+                {
+                    UserId = userId,
+                    ProblemId = submission.ProblemId,
+                    LanguageId = language.Id,
+                    Code = submission.Code,
+                    Output = result.PassedTestcases,
+                    Status = result.Status,
+                    TimeUsed = result.TimeUsed,
+                    MemoryUsed = result.MemoryUsed,
+                    SubmittedAt = DateTime.Now
+                });
+
+                return result;
+            }
         }
 
-        var language =await _languageRepo.GetByJudge0IdAsync((int)submission.LanguageId);
+        int totalTestCases = problem.TestCases.Count();
+        result.PassedTestcases = $"{passedCount}/{totalTestCases}";
+        result.Output ??= "All test cases passed";
+        result.Status ??= "Accepted";
+        result.TimeUsed = totalTime;
+        result.MemoryUsed = totalMemory;
+        result.IsAccepted = true;
+
 
         var addedSubmission = new Submission
         {
@@ -95,15 +176,17 @@ public class SubmissionService : ISubmissionService
             LanguageId = language.Id,
             Code = submission.Code,
             Output = result.PassedTestcases,
-            Status = result.Status??"",
+            Status = result.Status,
             TimeUsed = result.TimeUsed,
             MemoryUsed = result.MemoryUsed,
             SubmittedAt = DateTime.Now
         };
 
         await _submissionRepo.AddAsync(addedSubmission);
+
         return result;
     }
+
 
 
     public async Task DeleteAsync(long id)
@@ -139,11 +222,11 @@ public class SubmissionService : ISubmissionService
         return new SubmissionUpdateDto
         {
             SubmittedAt = DateTime.Now,
-            MemoryUsed = submission.MemoryUsed,
+            MemoryUsed = submission.MemoryUsed.Value,
             Id = submission.Id,
             Output = submission.Output,
             Status = submission.Status,
-            TimeUsed = submission.TimeUsed,
+            TimeUsed = submission.TimeUsed.Value,
             Code = submission.Code,
             LanguageId = submission.LanguageId,
             ProblemId = submission.ProblemId,

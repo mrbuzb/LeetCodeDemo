@@ -13,14 +13,14 @@ public static class TestCaseEndpoints
         userGroup.MapGet("/get-by-id",
             async (long id,ITestCaseService _service) =>
             {
-                Results.Ok(await _service.GetByIdAsync(id));
+                return Results.Ok(await _service.GetByIdAsync(id));
             })
             .WithName("GetTestCaseById");
 
         userGroup.MapGet("/get-by-problem-id",
             async (long id,ITestCaseService _service) =>
             {
-                Results.Ok(await _service.GetByProblemIdAsync(id));
+                return Results.Ok(await _service.GetByProblemIdAsync(id));
             })
             .WithName("GetTestCaseByProblemId");
     }
