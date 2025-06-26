@@ -16,12 +16,13 @@ public static class DependecyInjectionsConfiguration
         services.AddScoped<ILanguageService, LanguageService>();
         services.AddScoped<ITestCaseService, TestCaseService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
+        services.AddScoped<ISubmissionRepository, SubmissionRepository>();
         services.AddScoped<IProblemService, ProblemService>();
+        services.AddScoped<IUserStatsRepository, UserStatsRepository>();
+        services.AddScoped<IUserStatsServise, UserStatsServise>();
         services.AddScoped<ILanguageRepository, LanguageRepository>();
         services.AddScoped<ITestCaseRepository, TestCaseRepository>();
-        services.AddScoped<ISubmissionRepository, SubmissionRepository>();
         services.AddScoped<IProblemRepository, ProblemRepository>();
-        //services.AddHttpClient<ISubmissionService, SubmissionService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();

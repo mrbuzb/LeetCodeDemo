@@ -25,7 +25,7 @@ public class UserStatsRepository(AppDbContext _context) : IUserStatsRepository
 
     public async Task<List<UserStats>> GetTopAllTimeAsync()
     {
-        return await _context.UserStats
+        return await _context.UserStats.Include(x=>x.User)
             .OrderByDescending(x => x.SolvedCount)
             .Include(x => x.User)
             .Take(3)
@@ -35,7 +35,7 @@ public class UserStatsRepository(AppDbContext _context) : IUserStatsRepository
     public async Task<List<UserStats>> GetTopMonthlyAsync()
     {
         var fromDate = DateTime.UtcNow.AddDays(-30);
-        return await _context.UserStats
+        return await _context.UserStats.Include(x => x.User)
             .Where(x => x.UpdatedAt >= fromDate)
             .OrderByDescending(x => x.SolvedCount)
             .Include(x => x.User)
@@ -45,7 +45,7 @@ public class UserStatsRepository(AppDbContext _context) : IUserStatsRepository
 
     public async Task<List<UserStats>> GetTopWeeklyAsync()
     {
-        return await _context.UserStats
+        return await _context.UserStats.Include(x => x.User)
             .OrderByDescending(x => x.SolvedCount)
             .Include(x => x.User)
             .Take(3)

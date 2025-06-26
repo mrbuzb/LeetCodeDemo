@@ -64,13 +64,15 @@ public class SubmissionService : ISubmissionService
     }
     bool IsEqual(string actual, string expected)
     {
-        return Normalize(actual) == Normalize(expected);
+        return Normalize(actual).Contains(Normalize(expected));
     }
 
 
 
     public async Task<SubmissionResultDto> AddAsync(SubmissionDto submission, long userId)
     {
+        var stats = await _userStatsRepo.GetByUserIdAsync(userId);
+
         submission.Code = EscapeDoubleQuotes(submission.Code);
         var problem = await _problemRepo.GetByIdAsync(submission.ProblemId);
         var result = new SubmissionResultDto();
@@ -119,7 +121,8 @@ public class SubmissionService : ISubmissionService
                     MemoryUsed = result.MemoryUsed,
                     SubmittedAt = DateTime.Now
                 });
-
+                stats.TotalSubmits++;
+                await _userStatsRepo.UpdateAsync(stats);
                 result.ErrorMessage = judgeResult.stderr ?? judgeResult.compile_output ?? "Error";
                 return result;
             }
@@ -144,19 +147,8 @@ public class SubmissionService : ISubmissionService
                 result.Status = "WrongAnswer";
 
 
-
-                await _submissionRepo.AddAsync(new Submission
-                {
-                    UserId = userId,
-                    ProblemId = submission.ProblemId,
-                    LanguageId = language.Id,
-                    Code = submission.Code,
-                    Output = result.PassedTestcases,
-                    Status = result.Status,
-                    TimeUsed = result.TimeUsed,
-                    MemoryUsed = result.MemoryUsed,
-                    SubmittedAt = DateTime.Now
-                });
+                stats.TotalSubmits++;
+                await _userStatsRepo.UpdateAsync(stats);
 
                 return result;
             }
@@ -172,7 +164,6 @@ public class SubmissionService : ISubmissionService
 
         var userSubmissions = await _submissionRepo.GetByUserIdAsync(userId);
         var oldSubmission = userSubmissions.FirstOrDefault(x => x.ProblemId == submission.ProblemId && submission.LanguageId == submission.LanguageId);
-        var stats = await _userStatsRepo.GetByUserIdAsync(userId);
         if (oldSubmission is null)
         {
             var addedSubmission = new Submission
@@ -193,6 +184,21 @@ public class SubmissionService : ISubmissionService
             stats.Accuracy = (float)stats.SolvedCount / stats.TotalSubmits * 100;
             await _userStatsRepo.UpdateAsync(stats);
             await _submissionRepo.AddAsync(addedSubmission);
+
+
+
+            await _submissionRepo.AddAsync(new Submission
+            {
+                UserId = userId,
+                ProblemId = submission.ProblemId,
+                LanguageId = language.Id,
+                Code = submission.Code,
+                Output = result.PassedTestcases,
+                Status = result.Status,
+                TimeUsed = result.TimeUsed,
+                MemoryUsed = result.MemoryUsed,
+                SubmittedAt = DateTime.Now
+            });
         }
         else
         {

@@ -63,6 +63,7 @@ namespace LeetCode.Api
             app.MapProblemEndpoints();
             app.MapTestCaseEndpoints();
             app.MapSubmissionEndpoints();
+            app.MapUserStatsEndpoints();
 
 
             app.MapControllers();
