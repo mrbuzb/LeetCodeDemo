@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<TestCase> TestCases { get; set; }
     public DbSet<UserConfirme> Confirmers { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<UserStats> UserStats { get; set; }
 
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

@@ -13,12 +13,14 @@ public class SubmissionService : ISubmissionService
     private readonly ISubmissionRepository _submissionRepo;
     private readonly IProblemRepository _problemRepo;
     private readonly ILanguageRepository _languageRepo;
+    private readonly IUserStatsRepository _userStatsRepo;
 
-    public SubmissionService(ISubmissionRepository repo, IProblemRepository problemRepo, ILanguageRepository languageRepo)
+    public SubmissionService(ISubmissionRepository repo, IProblemRepository problemRepo, ILanguageRepository languageRepo, IUserStatsRepository userStatsRepo)
     {
         _submissionRepo = repo;
         _problemRepo = problemRepo;
         _languageRepo = languageRepo;
+        _userStatsRepo = userStatsRepo;
     }
 
     public static string EscapeDoubleQuotes(string input)
@@ -30,7 +32,6 @@ public class SubmissionService : ISubmissionService
         {
             if (c == '"')
             {
-                // Agar birinchi " bo‘lsa
                 if (!insideQuotes)
                 {
                     result.Append("\"");
@@ -38,7 +39,6 @@ public class SubmissionService : ISubmissionService
                 }
                 else
                 {
-                    // Yopuvchi " oldidan / qo‘shamiz
                     result.Append("\"");
                     insideQuotes = false;
                 }
@@ -120,28 +120,30 @@ public class SubmissionService : ISubmissionService
                     SubmittedAt = DateTime.Now
                 });
 
-                result.ErrorMessage = judgeResult.stderr??judgeResult.compile_output??"Error";
+                result.ErrorMessage = judgeResult.stderr ?? judgeResult.compile_output ?? "Error";
                 return result;
             }
 
             string actual = judgeResult.stdout?.Trim() ?? "";
             string expected = testCase.Expected.Trim();
 
-            
+
 
             if (float.TryParse(judgeResult.time, out float time))
                 totalTime += time;
 
             totalMemory += judgeResult.memory.GetValueOrDefault(0);
 
-            expected = expected.Replace("\\n","\n");
-            if (IsEqual(actual,expected))
+            expected = expected.Replace("\\n", "\n");
+            if (IsEqual(actual, expected))
                 passedCount++;
             if (!IsEqual(actual, expected))
             {
                 result.PassedTestcases = $"{passedCount}/{problem.TestCases.Count()}";
                 result.Output = actual;
-                result.Status ="WrongAnswer";
+                result.Status = "WrongAnswer";
+
+
 
                 await _submissionRepo.AddAsync(new Submission
                 {
@@ -168,22 +170,40 @@ public class SubmissionService : ISubmissionService
         result.MemoryUsed = totalMemory;
         result.IsAccepted = true;
 
-
-        var addedSubmission = new Submission
+        var userSubmissions = await _submissionRepo.GetByUserIdAsync(userId);
+        var oldSubmission = userSubmissions.FirstOrDefault(x => x.ProblemId == submission.ProblemId && submission.LanguageId == submission.LanguageId);
+        var stats = await _userStatsRepo.GetByUserIdAsync(userId);
+        if (oldSubmission is null)
         {
-            UserId = userId,
-            ProblemId = submission.ProblemId,
-            LanguageId = language.Id,
-            Code = submission.Code,
-            Output = result.PassedTestcases,
-            Status = result.Status,
-            TimeUsed = result.TimeUsed,
-            MemoryUsed = result.MemoryUsed,
-            SubmittedAt = DateTime.Now
-        };
-
-        await _submissionRepo.AddAsync(addedSubmission);
-
+            var addedSubmission = new Submission
+            {
+                UserId = userId,
+                ProblemId = submission.ProblemId,
+                LanguageId = language.Id,
+                Code = submission.Code,
+                Output = result.PassedTestcases,
+                Status = result.Status,
+                TimeUsed = result.TimeUsed,
+                MemoryUsed = result.MemoryUsed,
+                SubmittedAt = DateTime.Now
+            };
+            stats.TotalSubmits++;
+            stats.SolvedCount++;
+            stats.UpdatedAt = DateTime.Now;
+            stats.Accuracy = (float)stats.SolvedCount / stats.TotalSubmits * 100;
+            await _userStatsRepo.UpdateAsync(stats);
+            await _submissionRepo.AddAsync(addedSubmission);
+        }
+        else
+        {
+            oldSubmission.Code = submission.Code;
+            oldSubmission.Output = result.PassedTestcases;
+            oldSubmission.Status = result.Status;
+            oldSubmission.TimeUsed = result.TimeUsed;
+            oldSubmission.MemoryUsed = result.MemoryUsed;
+            oldSubmission.SubmittedAt = DateTime.Now;
+            await _submissionRepo.UpdateAsync(oldSubmission);
+        }
         return result;
     }
 

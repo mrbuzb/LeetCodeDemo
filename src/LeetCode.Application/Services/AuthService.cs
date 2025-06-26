@@ -17,7 +17,7 @@ namespace LeetCode.Application.Services;
 public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _validator,
     IUserRepository _userRepo, ITokenService _tokenService,
     JwtAppSettings _jwtSetting, IValidator<UserLoginDto> _validatorForLogin,
-    IRefreshTokenRepository _refTokRepo) : IAuthService
+    IRefreshTokenRepository _refTokRepo,IUserStatsRepository _userStats) : IAuthService
 {
     private readonly int Expires = int.Parse(_jwtSetting.Lifetime);
 
@@ -67,7 +67,14 @@ public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _v
 
             long userId = await _userRepo.AddUserAync(user);
 
-
+            await _userStats.AddAsync(new UserStats
+            {
+                UserId = userId,
+                Accuracy = 0,
+                SolvedCount = 0,
+                UpdatedAt = DateTime.Now,
+                TotalSubmits = 0,
+            });
 
             var foundUser = await _userRepo.GetUserByIdAync(userId);
 
