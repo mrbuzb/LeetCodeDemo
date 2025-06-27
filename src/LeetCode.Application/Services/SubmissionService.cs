@@ -4,6 +4,7 @@ using LeetCode.Application.Dtos;
 using LeetCode.Application.Interfaces;
 using LeetCode.Core.Errors;
 using LeetCode.Domain.Entities;
+using static System.Net.Mime.MediaTypeNames;
 namespace LeetCode.Application.Services;
 
 
@@ -23,7 +24,7 @@ public class SubmissionService : ISubmissionService
         _userStatsRepo = userStatsRepo;
     }
 
-    public static string EscapeDoubleQuotes(string input)
+    private static string EscapeDoubleQuotes(string input)
     {
         bool insideQuotes = false;
         var result = new System.Text.StringBuilder();
@@ -53,18 +54,56 @@ public class SubmissionService : ISubmissionService
     }
 
 
+    private string TestRunnerCSharp(string code,TestCase testCase)
+    {
+
+        string testRunnerCode = $@"
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+public class Program
+{{
+    public static void Main()
+    {{
+        object result = Result({testCase.Input}); // object qilib olamiz
+
+        // Agar result IEnumerable bo‘lsa (lekin string emas)
+        if (result is IEnumerable enumerable && !(result is string))
+        {{
+            var list = new List<object>();
+            foreach (var item in enumerable)
+            {{
+                list.Add(item);
+            }}
+            Console.WriteLine(""["" + string.Join("","", list) + ""]"");
+        }}
+        else
+        {{
+            Console.WriteLine(result.ToString().ToLower());
+        }}
+    }}
+
+    {code}
+}}";
+
+
+        return testRunnerCode;
+    }
+
     string Normalize(string str)
     {
         return string.Join('\n',
-            (str ?? "")
-            .Trim()
-            .Split('\n')
-            .Select(line => line.TrimEnd())
-        );
+    (str ?? "")
+    .Trim()
+    .Split('\n')
+    .Select(line => line.Trim('"').TrimEnd())
+);
+
     }
     bool IsEqual(string actual, string expected)
     {
-        return Normalize(actual).Contains(Normalize(expected));
+        return Normalize(actual).Contains(Normalize(expected)) || actual == expected;
     }
 
 
@@ -86,8 +125,8 @@ public class SubmissionService : ISubmissionService
             var request = new
             {
                 language_id = language.Judge0Id,
-                source_code = submission.Code,
-                stdin = testCase.Input ?? ""
+                source_code = language.Name.ToLower().Contains("c#") ? TestRunnerCSharp(submission.Code,testCase) : submission.Code,
+                stdin = language.Name.ToLower().Contains("c#") ? "" : testCase.Input
             };
 
             var jsonRequest = JsonSerializer.Serialize(request);
