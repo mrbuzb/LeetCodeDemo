@@ -8,4 +8,6 @@ public class UserStatsDto
     public long TotalSubmits { get; set; }
     public float Accuracy { get; set; }
     public DateTime UpdatedAt { get; set; }
+
 }
+

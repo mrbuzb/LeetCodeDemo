@@ -14,6 +14,14 @@ namespace LeetCode.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(5000); // Hamma IP-lardan 5000-portda qabul qiladi
+            });
+
+
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -32,11 +40,16 @@ namespace LeetCode.Api
             {
                 options.AddPolicy("AllowLocalhost5173", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
+                    policy.WithOrigins(
+                        "http://localhost:5173",
+                        "http://192.168.206.152:5173",
+                        "http://172.29.64.1:5173"
+                    )
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
                 });
             });
+
 
 
 
