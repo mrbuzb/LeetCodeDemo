@@ -9,7 +9,6 @@ public class Problem
     public string Tags { get; set; }
 
     public long CreatorId { get; set; }
-    public User User { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

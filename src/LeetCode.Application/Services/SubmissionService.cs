@@ -125,7 +125,7 @@ public class Program
             var request = new
             {
                 language_id = language.Judge0Id,
-                source_code = language.Name.ToLower().Contains("c#") ? TestRunnerCSharp(submission.Code,testCase) : submission.Code,
+                source_code = language.Name.ToLower().Contains("c#--Error") ? TestRunnerCSharp(submission.Code,testCase) : submission.Code,
                 stdin = language.Name.ToLower().Contains("c#") ? "" : testCase.Input
             };
 
@@ -217,11 +217,7 @@ public class Program
                 MemoryUsed = result.MemoryUsed,
                 SubmittedAt = DateTime.Now
             };
-            stats.TotalSubmits++;
-            stats.SolvedCount++;
-            stats.UpdatedAt = DateTime.Now;
-            stats.Accuracy = (float)stats.SolvedCount / stats.TotalSubmits * 100;
-            await _userStatsRepo.UpdateAsync(stats);
+            
             await _submissionRepo.AddAsync(addedSubmission);
 
 
@@ -249,6 +245,11 @@ public class Program
             oldSubmission.SubmittedAt = DateTime.Now;
             await _submissionRepo.UpdateAsync(oldSubmission);
         }
+        stats.TotalSubmits++;
+        stats.SolvedCount++;
+        stats.UpdatedAt = DateTime.Now;
+        stats.Accuracy = (float)stats.SolvedCount / stats.TotalSubmits * 100;
+        await _userStatsRepo.UpdateAsync(stats);
         return result;
     }
 

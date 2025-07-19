@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace LeetCode.Infrastructure.Persistence.Migrations
+namespace LeetCode.Infrastructure.Persistence.MigrationsMS
 {
     /// <inheritdoc />
-    public partial class EntitiesAdded : Migration
+    public partial class InitialCreationMS : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,17 +36,28 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                     Difficulty = table.Column<int>(type: "int", nullable: false),
                     Tags = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     CreatorId = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Problems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Problems_Users_CreatorId",
-                        column: x => x.CreatorId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserStats",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    SolvedCount = table.Column<long>(type: "bigint", nullable: false),
+                    TotalSubmits = table.Column<long>(type: "bigint", nullable: false),
+                    Accuracy = table.Column<float>(type: "real", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserStats", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,11 +70,11 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                     ProblemId = table.Column<long>(type: "bigint", nullable: false),
                     LanguageId = table.Column<long>(type: "bigint", nullable: false),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Output = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Output = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TimeUsed = table.Column<float>(type: "real", nullable: false),
                     MemoryUsed = table.Column<float>(type: "real", nullable: false),
-                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    SubmittedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
                 },
                 constraints: table =>
                 {
@@ -79,12 +90,6 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                         column: x => x.ProblemId,
                         principalTable: "Problems",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Submissions_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -111,11 +116,6 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Problems_CreatorId",
-                table: "Problems",
-                column: "CreatorId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Submissions_LanguageId",
                 table: "Submissions",
                 column: "LanguageId");
@@ -124,11 +124,6 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                 name: "IX_Submissions_ProblemId",
                 table: "Submissions",
                 column: "ProblemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Submissions_UserId",
-                table: "Submissions",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TestCases_ProblemId",
@@ -144,6 +139,9 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "TestCases");
+
+            migrationBuilder.DropTable(
+                name: "UserStats");
 
             migrationBuilder.DropTable(
                 name: "Languages");

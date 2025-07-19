@@ -60,15 +60,4 @@ public class TestCaseService(ITestCaseRepository _repo) : ITestCaseService
             ProblemId = testCase.ProblemId,
         };
     }
-    /*private TestCase Converter(TestCaseUpdateDto testCase)
-    {
-        return new TestCase
-        {
-            Id = testCase.Id,
-            Expected = testCase.Expected,
-            Input = testCase.Input,
-            IsSample = testCase.IsSample,
-            ProblemId = testCase.ProblemId,
-        };
-    }*/
 }

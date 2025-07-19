@@ -7,9 +7,14 @@ public static class DatabaseConfigurations
 {
     public static void ConfigureDataBase(this WebApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
+        var connectionStringMs = builder.Configuration.GetConnectionString("DatabaseConnectionMS");
+        
+        builder.Services.AddDbContext<AppDbContextMS>(options =>
+          options.UseSqlServer(connectionStringMs));
 
-        builder.Services.AddDbContext<AppDbContext>(options =>
-          options.UseSqlServer(connectionString));
+        var connectionStringPs = builder.Configuration.GetConnectionString("DatabaseConnectionPS");
+
+        builder.Services.AddDbContext<AppDbContextPS>(options =>
+          options.UseNpgsql(connectionStringPs));
     }
 }

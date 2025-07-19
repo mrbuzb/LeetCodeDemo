@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LeetCode.Infrastructure.Persistence.Configurations;
+namespace LeetCode.Infrastructure.Persistence.ConfigurationsPS;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
@@ -29,9 +29,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                .WithMany(r => r.Users)
                .HasForeignKey(u => u.RoleId)
                .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasMany(u => u.Submissions)
-                   .WithOne(s => s.User)
-                   .HasForeignKey(s => s.UserId);
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeetCode.Infrastructure.Persistence.Repositories;
 
-public class ProblemRepository(AppDbContext _context) : IProblemRepository
+public class ProblemRepository(AppDbContextMS _context) : IProblemRepository
 {
     public async Task<long> AddAsync(Problem problem)
     {

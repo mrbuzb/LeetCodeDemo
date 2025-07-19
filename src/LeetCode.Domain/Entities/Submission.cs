@@ -5,7 +5,6 @@ public class Submission
     public long Id { get; set; }
 
     public long UserId { get; set; }
-    public User User { get; set; }
 
     public long ProblemId { get; set; }
     public Problem Problem { get; set; }

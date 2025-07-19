@@ -16,7 +16,7 @@ public static class ProblemEndoints
         userGroup.MapGet("/get-all",
             async (IProblemService _service) =>
             {
-                return Results.Ok(await _service.GetAllAsync());
+                return Results.Ok(new { success = true, data = await _service.GetAllAsync() });
             })
             .WithName("GetAllProblems");
 

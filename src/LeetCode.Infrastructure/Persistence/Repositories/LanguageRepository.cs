@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeetCode.Infrastructure.Persistence.Repositories;
 
-public class LanguageRepository(AppDbContext _context) : ILanguageRepository
+public class LanguageRepository(AppDbContextMS _context) : ILanguageRepository
 {
     public async Task<List<Language>> GetAllAsync()
     {

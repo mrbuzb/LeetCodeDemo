@@ -8,7 +8,6 @@ public static class LanguageEndpoints
     public static void MapLanguageEndpoints(this WebApplication app)
     {
         var userGroup = app.MapGroup("/api/language")
-            .RequireAuthorization()
             .WithTags("Language Management");
 
         userGroup.MapGet("/get-all",

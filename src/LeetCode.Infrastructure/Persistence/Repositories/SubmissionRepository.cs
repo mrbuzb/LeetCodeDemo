@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeetCode.Infrastructure.Persistence.Repositories;
 
-public class SubmissionRepository(AppDbContext _context) : ISubmissionRepository
+public class SubmissionRepository(AppDbContextMS _context) : ISubmissionRepository
 {
     public async Task<long> AddAsync(Submission submission)
     {

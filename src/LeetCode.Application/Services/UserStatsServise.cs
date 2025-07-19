@@ -1,15 +1,21 @@
-﻿using LeetCode.Application.Dtos;
+﻿using System.Threading.Tasks;
+using LeetCode.Application.Dtos;
 using LeetCode.Application.Interfaces;
 using LeetCode.Domain.Entities;
 
 namespace LeetCode.Application.Services;
 
-public class UserStatsServise(IUserStatsRepository _repo) : IUserStatsServise
+public class UserStatsServise(IUserStatsRepository _repo,IUserRepository _userRepo) : IUserStatsServise
 {
     public async Task<List<UserStatsDto>> GetTopAllTimeAsync()
     {
         var stats = await _repo.GetTopAllTimeAsync();
         return stats.Select(Converter).ToList();
+    }
+
+    public async Task<UserStatsDto> GetUserStatsById(long userId)
+    {
+        return Converter(await _repo.GetByUserIdAsync(userId));
     }
 
     public async Task<List<UserStatsDto>> GetTopMonthlyAsync()
@@ -32,7 +38,8 @@ public class UserStatsServise(IUserStatsRepository _repo) : IUserStatsServise
             SolvedCount = stats.SolvedCount,
             TotalSubmits = stats.TotalSubmits,
             UpdatedAt = stats.UpdatedAt,
-            UserName = stats.User.UserName,
+            UserName =  _userRepo.GetUserByIdAync(stats.UserId).Result.UserName,
         };
     }
+
 }

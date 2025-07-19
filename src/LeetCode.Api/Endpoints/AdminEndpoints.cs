@@ -50,7 +50,7 @@ public static class AdminEndpoints
             await _service.DeleteAsync(problemId, long.Parse(userId));
         })
             .WithName("DeleteProblem");
-
+        
         userGroup.MapDelete("/delete-submission", [Authorize(Roles = "Admin, SuperAdmin")]
         async (long submissionId,ISubmissionService _service) =>
         {
@@ -85,7 +85,7 @@ public static class AdminEndpoints
         async (string role, IRoleService _roleService) =>
         {
             var users = await _roleService.GetAllUsersByRoleAsync(role);
-            return Results.Ok(users);
+            return Results.Ok(new {success = true,data = users });
         })
             .WithName("GetAllUsersByRole");
 

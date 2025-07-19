@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeetCode.Infrastructure.Persistence.Repositories;
 
-public class RefreshTokenRepository(AppDbContext _context) : IRefreshTokenRepository
+public class RefreshTokenRepository(AppDbContextPS _context) : IRefreshTokenRepository
 {
     public async Task AddRefreshToken(RefreshToken refreshToken)
     {

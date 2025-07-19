@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace LeetCode.Infrastructure.Persistence.Migrations
+namespace LeetCode.Infrastructure.Persistence.MigrationsPS
 {
     /// <inheritdoc />
-    public partial class InitialCreation : Migration
+    public partial class InitialCreationPS : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,11 +17,11 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     ConfirmerId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Gmail = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    IsConfirmed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
-                    ConfirmingCode = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: true),
-                    ExpiredDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "DATEADD(MINUTE, 10, GETDATE())"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Gmail = table.Column<string>(type: "text", nullable: false),
+                    IsConfirmed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    ConfirmingCode = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: true),
+                    ExpiredDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() + interval '10 minutes'"),
                     UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -33,9 +34,9 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,13 +48,13 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Salt = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Salt = table.Column<string>(type: "text", nullable: false),
                     RoleId = table.Column<long>(type: "bigint", nullable: false),
                     ConfirmerId = table.Column<long>(type: "bigint", nullable: true)
                 },
@@ -79,10 +80,10 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     RefreshTokenId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Expires = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsRevoked = table.Column<bool>(type: "bit", nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "boolean", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -96,12 +97,34 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserStats",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    SolvedCount = table.Column<long>(type: "bigint", nullable: false),
+                    TotalSubmits = table.Column<long>(type: "bigint", nullable: false),
+                    Accuracy = table.Column<float>(type: "real", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserStats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserStats_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Confirmers_Gmail",
                 table: "Confirmers",
                 column: "Gmail",
-                unique: true,
-                filter: "[IsConfirmed] = 1");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
@@ -112,13 +135,17 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
                 name: "IX_Users_ConfirmerId",
                 table: "Users",
                 column: "ConfirmerId",
-                unique: true,
-                filter: "[ConfirmerId] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserStats_UserId",
+                table: "UserStats",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -126,6 +153,9 @@ namespace LeetCode.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
+
+            migrationBuilder.DropTable(
+                name: "UserStats");
 
             migrationBuilder.DropTable(
                 name: "Users");

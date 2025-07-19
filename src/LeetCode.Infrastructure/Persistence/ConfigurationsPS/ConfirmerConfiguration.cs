@@ -2,13 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LeetCode.Infrastructure.Persistence.Configurations;
+namespace LeetCode.Infrastructure.Persistence.ConfigurationsPS;
 
 public class ConfirmerConfiguration : IEntityTypeConfiguration<UserConfirme>
 {
     public void Configure(EntityTypeBuilder<UserConfirme> builder)
     {
         builder.ToTable("Confirmers");
+
         builder.HasKey(uc => uc.ConfirmerId);
 
         builder.Property(uc => uc.ConfirmingCode)
@@ -16,15 +17,13 @@ public class ConfirmerConfiguration : IEntityTypeConfiguration<UserConfirme>
             .HasMaxLength(6);
 
         builder.HasIndex(uc => uc.Gmail)
-            .IsUnique()
-            .HasFilter("[IsConfirmed] = 1");
+            .IsUnique();
 
         builder.Property(uc => uc.ExpiredDate)
             .IsRequired()
-            .HasDefaultValueSql("DATEADD(MINUTE, 10, GETDATE())");
+            .HasDefaultValueSql("NOW() + interval '10 minutes'");
 
-
-        builder.Property(isc => isc.IsConfirmed)
+        builder.Property(uc => uc.IsConfirmed)
             .IsRequired()
             .HasDefaultValue(false);
 

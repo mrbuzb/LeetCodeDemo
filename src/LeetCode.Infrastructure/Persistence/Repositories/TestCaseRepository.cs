@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeetCode.Infrastructure.Persistence.Repositories;
 
-public class TestCaseRepository(AppDbContext _context) : ITestCaseRepository
+public class TestCaseRepository(AppDbContextMS _context) : ITestCaseRepository
 {
     public async Task<long> AddAsync(TestCase testCase)
     {

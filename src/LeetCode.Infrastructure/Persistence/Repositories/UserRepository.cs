@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeetCode.Infrastructure.Persistence.Repositories;
 
-public class UserRepository(AppDbContext _context) : IUserRepository
+public class UserRepository(AppDbContextPS _context) : IUserRepository
 {
     public async Task<long> AddUserAync(User user)
     {

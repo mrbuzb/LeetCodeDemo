@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeetCode.Infrastructure.Persistence.Repositories;
 
-public class UserRoleRepository(AppDbContext _context) : IRoleRepository
+public class UserRoleRepository(AppDbContextPS _context) : IRoleRepository
 {
     public async Task<List<UserRole>> GetAllRolesAsync() => await _context.UserRoles.ToListAsync();
 

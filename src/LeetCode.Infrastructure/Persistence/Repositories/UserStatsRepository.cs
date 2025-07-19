@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LeetCode.Infrastructure.Persistence.Repositories;
 
-public class UserStatsRepository(AppDbContext _context) : IUserStatsRepository
+public class UserStatsRepository(AppDbContextMS _context) : IUserStatsRepository
 {
     public async Task AddAsync(UserStats stats)
     {
@@ -25,9 +25,8 @@ public class UserStatsRepository(AppDbContext _context) : IUserStatsRepository
 
     public async Task<List<UserStats>> GetTopAllTimeAsync()
     {
-        return await _context.UserStats.Include(x=>x.User)
+        return await _context.UserStats
             .OrderByDescending(x => x.SolvedCount)
-            .Include(x => x.User)
             .Take(3)
             .ToListAsync();
     }
@@ -35,19 +34,17 @@ public class UserStatsRepository(AppDbContext _context) : IUserStatsRepository
     public async Task<List<UserStats>> GetTopMonthlyAsync()
     {
         var fromDate = DateTime.UtcNow.AddDays(-30);
-        return await _context.UserStats.Include(x => x.User)
+        return await _context.UserStats
             .Where(x => x.UpdatedAt >= fromDate)
             .OrderByDescending(x => x.SolvedCount)
-            .Include(x => x.User)
             .Take(3)
             .ToListAsync();
     }
 
     public async Task<List<UserStats>> GetTopWeeklyAsync()
     {
-        return await _context.UserStats.Include(x => x.User)
+        return await _context.UserStats
             .OrderByDescending(x => x.SolvedCount)
-            .Include(x => x.User)
             .Take(3)
             .ToListAsync();
     }

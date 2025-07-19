@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LeetCode.Infrastructure.Persistence.Configurations;
+namespace LeetCode.Infrastructure.Persistence.ConfigurationsPS;
 
 public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
