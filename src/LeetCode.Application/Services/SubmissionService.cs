@@ -217,7 +217,11 @@ public class Program
                 MemoryUsed = result.MemoryUsed,
                 SubmittedAt = DateTime.Now
             };
-            
+            stats.TotalSubmits++;
+            stats.SolvedCount++;
+            stats.UpdatedAt = DateTime.Now;
+            stats.Accuracy = (float)stats.SolvedCount / stats.TotalSubmits * 100;
+            await _userStatsRepo.UpdateAsync(stats);
             await _submissionRepo.AddAsync(addedSubmission);
 
 
@@ -245,11 +249,7 @@ public class Program
             oldSubmission.SubmittedAt = DateTime.Now;
             await _submissionRepo.UpdateAsync(oldSubmission);
         }
-        stats.TotalSubmits++;
-        stats.SolvedCount++;
-        stats.UpdatedAt = DateTime.Now;
-        stats.Accuracy = (float)stats.SolvedCount / stats.TotalSubmits * 100;
-        await _userStatsRepo.UpdateAsync(stats);
+        
         return result;
     }
 
